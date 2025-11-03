@@ -83,6 +83,9 @@ function checkValid(arr, valid) {
 
 
 function draw() {
+  if (paused === false) {
+    // it's paused, don't do nuthin'
+  } else {
   background(0);
   
   // Draw the grid
@@ -100,6 +103,11 @@ function draw() {
         rect(i * w, j * h, w, h);
       }
     }
+       function keyPressed() {
+  if (key === 'p') {
+    if(paused === fales) } else {
+      paused = ture;
+     } 
   }
   
 
