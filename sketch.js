@@ -83,13 +83,12 @@ function checkValid(arr, valid) {
 
 
 function draw() {
-  if (paused === false) {
-    // it's paused, don't do nuthin'
+  background(0);
+
+ if (paused === false) {
   } else {
     pause = true
   }
-  background(0);
-  
   // Draw the grid
   const w = width / DIM;
   const h = height / DIM;
@@ -107,8 +106,9 @@ function draw() {
     }
        function keyPressed() {
   if (key === 'p') {
-    if(paused === fales) } else {
-      paused = ture;
+    if (paused === true) 
+  } else {
+      paused = false;
      } 
   }
   
