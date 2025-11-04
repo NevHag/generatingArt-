@@ -86,6 +86,8 @@ function draw() {
   if (paused === false) {
     // it's paused, don't do nuthin'
   } else {
+    pause = true
+  }
   background(0);
   
   // Draw the grid
