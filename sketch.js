@@ -80,15 +80,13 @@ function checkValid(arr, valid) {
     }
   }
 }
-
+varible(pause)
 
 function draw() {
-  background(0);
-
- if (paused === false) {
+ if (paused){
+   // its paused, don't do nuthin'
   } else {
-    pause = true
-  }
+   background(0);
   // Draw the grid
   const w = width / DIM;
   const h = height / DIM;
@@ -106,9 +104,10 @@ function draw() {
     }
        function keyPressed() {
   if (key === 'p') {
-    if (paused === true) 
+    if (paused === false) {
+      paused = true;
   } else {
-      paused = false;
+      paused = false; }
      } 
   }
   
