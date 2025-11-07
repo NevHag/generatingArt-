@@ -16,6 +16,8 @@ let grid = [];
 // Width and height of each cell
 const DIM = 25;
 
+var paused = false;
+
 // Load images
 function preload() {
   const path = "circuit";
@@ -84,128 +86,131 @@ varible(pause)
 
 function draw() {
  if (paused){
-   // its paused, don't do nuthin'
+   // its paused, draw the paused screen
   } else {
-   background(0);
-  // Draw the grid
-  const w = width / DIM;
-  const h = height / DIM;
-  for (let j = 0; j < DIM; j++) {
-    for (let i = 0; i < DIM; i++) {
-      let cell = grid[i + j * DIM];
-      if (cell.collapsed) {
-        let index = cell.options[0];
-        image(tiles[index].img, i * w, j * h, w, h);
-      } else {
-        fill(0);
-        stroke(100);
-        rect(i * w, j * h, w, h);
+    background(0);
+    // Draw the grid
+    const w = width / DIM;
+    const h = height / DIM;
+    for (let j = 0; j < DIM; j++) {
+      for (let i = 0; i < DIM; i++) {
+        let cell = grid[i + j * DIM];
+        if (cell.collapsed) {
+          let index = cell.options[0];
+          image(tiles[index].img, i * w, j * h, w, h);
+        } else {
+          fill(0);
+          stroke(100);
+          rect(i * w, j * h, w, h);
+        }
       }
     }
-       function keyPressed() {
+    // Make a copy of grid
+    let gridCopy = grid.slice();
+    // Remove any collapsed cells
+    gridCopy = gridCopy.filter((a) => !a.collapsed);
+    
+    // The algorithm has completed if everything is collapsed
+    if (grid.length == 0) {
+      return;
+    }
+    
+    // Pick a cell with least entropy
+    
+    // Sort by entropy
+    gridCopy.sort((a, b) => {
+      return a.options.length - b.options.length;
+    });
+
+    // Keep only the lowest entropy cells
+    let len = gridCopy[0].options.length;
+    let stopIndex = 0;
+    for (let i = 1; i < gridCopy.length; i++) {
+      if (gridCopy[i].options.length > len) {
+        stopIndex = i;
+        break;
+      }
+    }
+    if (stopIndex > 0) gridCopy.splice(stopIndex);
+    
+    
+    // Collapse a cell
+    const cell = random(gridCopy);
+    cell.collapsed = true;
+    const pick = random(cell.options);
+    if (pick === undefined) {
+      startOver();
+      return;
+    }
+    cell.options = [pick];
+    
+    // Calculate entropy
+    const nextGrid = [];
+    for (let j = 0; j < DIM; j++) {
+      for (let i = 0; i < DIM; i++) {
+        let index = i + j * DIM;
+        if (grid[index].collapsed) {
+          nextGrid[index] = grid[index];
+        } else {
+          let options = new Array(tiles.length).fill(0).map((x, i) => i);
+          // Look up
+          if (j > 0) {
+            let up = grid[i + (j - 1) * DIM];
+            let validOptions = [];
+            for (let option of up.options) {
+              let valid = tiles[option].down;
+              validOptions = validOptions.concat(valid);
+            }
+            checkValid(options, validOptions);
+          }
+          // Look right
+          if (i < DIM - 1) {
+            let right = grid[i + 1 + j * DIM];
+            let validOptions = [];
+            for (let option of right.options) {
+              let valid = tiles[option].left;
+              validOptions = validOptions.concat(valid);
+            }
+            checkValid(options, validOptions);
+          }
+          // Look down
+          if (j < DIM - 1) {
+            let down = grid[i + (j + 1) * DIM];
+            let validOptions = [];
+            for (let option of down.options) {
+              let valid = tiles[option].up;
+              validOptions = validOptions.concat(valid);
+            }
+            checkValid(options, validOptions);
+          }
+          // Look left
+          if (i > 0) {
+            let left = grid[i - 1 + j * DIM];
+            let validOptions = [];
+            for (let option of left.options) {
+              let valid = tiles[option].right;
+              validOptions = validOptions.concat(valid);
+            }
+            checkValid(options, validOptions);
+          }
+
+          // I could immediately collapse if only one option left?
+          nextGrid[index] = new Cell(options);
+        }
+      }
+    }
+
+    grid = nextGrid;
+  }
+}
+
+// This function could be simplified, but it will work
+function keyPressed() {
   if (key === 'p') {
     if (paused === false) {
       paused = true;
-  } else {
-      paused = false; }
-     } 
+    } else {
+      paused = false;
+    } 
   }
-  
-
-  // Make a copy of grid
-  let gridCopy = grid.slice();
-  // Remove any collapsed cells
-  gridCopy = gridCopy.filter((a) => !a.collapsed);
-  
-  // The algorithm has completed if everything is collapsed
-  if (grid.length == 0) {
-    return;
-  }
-  
-  // Pick a cell with least entropy
-  
-  // Sort by entropy
-  gridCopy.sort((a, b) => {
-    return a.options.length - b.options.length;
-  });
-
-  // Keep only the lowest entropy cells
-  let len = gridCopy[0].options.length;
-  let stopIndex = 0;
-  for (let i = 1; i < gridCopy.length; i++) {
-    if (gridCopy[i].options.length > len) {
-      stopIndex = i;
-      break;
-    }
-  }
-  if (stopIndex > 0) gridCopy.splice(stopIndex);
-  
-  
-  // Collapse a cell
-  const cell = random(gridCopy);
-  cell.collapsed = true;
-  const pick = random(cell.options);
-  if (pick === undefined) {
-    startOver();
-    return;
-  }
-  cell.options = [pick];
-  
-  // Calculate entropy
-  const nextGrid = [];
-  for (let j = 0; j < DIM; j++) {
-    for (let i = 0; i < DIM; i++) {
-      let index = i + j * DIM;
-      if (grid[index].collapsed) {
-        nextGrid[index] = grid[index];
-      } else {
-        let options = new Array(tiles.length).fill(0).map((x, i) => i);
-        // Look up
-        if (j > 0) {
-          let up = grid[i + (j - 1) * DIM];
-          let validOptions = [];
-          for (let option of up.options) {
-            let valid = tiles[option].down;
-            validOptions = validOptions.concat(valid);
-          }
-          checkValid(options, validOptions);
-        }
-        // Look right
-        if (i < DIM - 1) {
-          let right = grid[i + 1 + j * DIM];
-          let validOptions = [];
-          for (let option of right.options) {
-            let valid = tiles[option].left;
-            validOptions = validOptions.concat(valid);
-          }
-          checkValid(options, validOptions);
-        }
-        // Look down
-        if (j < DIM - 1) {
-          let down = grid[i + (j + 1) * DIM];
-          let validOptions = [];
-          for (let option of down.options) {
-            let valid = tiles[option].up;
-            validOptions = validOptions.concat(valid);
-          }
-          checkValid(options, validOptions);
-        }
-        // Look left
-        if (i > 0) {
-          let left = grid[i - 1 + j * DIM];
-          let validOptions = [];
-          for (let option of left.options) {
-            let valid = tiles[option].right;
-            validOptions = validOptions.concat(valid);
-          }
-          checkValid(options, validOptions);
-        }
-
-        // I could immediately collapse if only one option left?
-        nextGrid[index] = new Cell(options);
-      }
-    }
-  }
-
-  grid = nextGrid;
 }
