@@ -87,6 +87,7 @@ varible(pause)
 function draw() {
  if (paused){
    // its paused, draw the paused screen
+   text('PAUSED')
   } else {
     background(0);
     // Draw the grid
@@ -207,10 +208,6 @@ function draw() {
 // This function could be simplified, but it will work
 function keyPressed() {
   if (key === 'p') {
-    if (paused === false) {
-      paused = true;
-    } else {
-      paused = false;
-    } 
+   paused = !paused
   }
 }
