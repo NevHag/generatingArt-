@@ -207,9 +207,11 @@ function draw() {
 
 // This function could be simplified, but it will work
 function keyPressed() {
-  if (key === 'p') {
-   paused = !paused
+  if (key === 'p')  {
+   paused = !paused;
   }
   if (key === 'r') {
     startOver();
+  }
 }
+  
