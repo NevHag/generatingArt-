@@ -210,6 +210,6 @@ function keyPressed() {
   if (key === 'p') {
    paused = !paused
   }
-  if (Key === 'r') {
+  if (key === 'r') {
     startOver();
 }
