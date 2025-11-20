@@ -18,11 +18,17 @@ const DIM = 25;
 
 var paused = false;
 
+var tileset = "maze"
+var numOriginalTiles = 6;
+
 // Load images
 function preload() {
-  const path = "circuit";
-  for (let i = 0; i < 13; i++) {
-    tileImages[i] = loadImage(`${path}/${i}.png`);
+  let numOriginalTiles = 6;
+  if (tileset === "circuit") {
+    numOriginalTiles = 13;
+  }
+  for (let i = 0; i < numOriginalTiles; i++) {
+    tileImages[i] = loadImage(`${tileset}/${i}.png`);
   }
 }
 
@@ -30,23 +36,32 @@ function setup() {
   createCanvas(400, 400);
 
   // Create and label the tiles
-  tiles[0] = new Tile(tileImages[0], ["AAA", "AAA", "AAA", "AAA"]);
-  tiles[1] = new Tile(tileImages[1], ["BBB", "BBB", "BBB", "BBB"]);
-  tiles[2] = new Tile(tileImages[2], ["BBB", "BCB", "BBB", "BBB"]);
-  tiles[3] = new Tile(tileImages[3], ["BBB", "BDB", "BBB", "BDB"]);
-  tiles[4] = new Tile(tileImages[4], ["ABB", "BCB", "BBA", "AAA"]);
-  tiles[5] = new Tile(tileImages[5], ["ABB", "BBB", "BBB", "BBA"]);
-  tiles[6] = new Tile(tileImages[6], ["BBB", "BCB", "BBB", "BCB"]);
-  tiles[7] = new Tile(tileImages[7], ["BDB", "BCB", "BDB", "BCB"]);
-  tiles[8] = new Tile(tileImages[8], ["BDB", "BBB", "BCB", "BBB"]);
-  tiles[9] = new Tile(tileImages[9], ["BCB", "BCB", "BBB", "BCB"]);
-  tiles[10] = new Tile(tileImages[10], ["BCB", "BCB", "BCB", "BCB"]);
-  tiles[11] = new Tile(tileImages[11], ["BCB", "BCB", "BBB", "BBB"]);
-  tiles[12] = new Tile(tileImages[12], ["BBB", "BCB", "BBB", "BCB"]);
+  if (tileset === "circuit") {
+    tiles[0] = new Tile(tileImages[0], ["AAA", "AAA", "AAA", "AAA"]);
+    tiles[1] = new Tile(tileImages[1], ["BBB", "BBB", "BBB", "BBB"]);
+    tiles[2] = new Tile(tileImages[2], ["BBB", "BCB", "BBB", "BBB"]);
+    tiles[3] = new Tile(tileImages[3], ["BBB", "BDB", "BBB", "BDB"]);
+    tiles[4] = new Tile(tileImages[4], ["ABB", "BCB", "BBA", "AAA"]);
+    tiles[5] = new Tile(tileImages[5], ["ABB", "BBB", "BBB", "BBA"]);
+    tiles[6] = new Tile(tileImages[6], ["BBB", "BCB", "BBB", "BCB"]);
+    tiles[7] = new Tile(tileImages[7], ["BDB", "BCB", "BDB", "BCB"]);
+    tiles[8] = new Tile(tileImages[8], ["BDB", "BBB", "BCB", "BBB"]);
+    tiles[9] = new Tile(tileImages[9], ["BCB", "BCB", "BBB", "BCB"]);
+    tiles[10] = new Tile(tileImages[10], ["BCB", "BCB", "BCB", "BCB"]);
+    tiles[11] = new Tile(tileImages[11], ["BCB", "BCB", "BBB", "BBB"]);
+    tiles[12] = new Tile(tileImages[12], ["BBB", "BCB", "BBB", "BCB"]);
+  } else {
+    tiles[0] = new Tile(tileImages[0], ["AAA", "AAA", "ABA", "AAA"]);
+    tiles[1] = new Tile(tileImages[1], ["AAA", "ABA", "ABA", "AAA"]);
+    tiles[2] = new Tile(tileImages[2], ["ABA", "AAA", "ABA", "AAA"]);
+    tiles[3] = new Tile(tileImages[3], ["ABA", "ABA", "ABA", "ABA"]);
+    tiles[4] = new Tile(tileImages[4], ["ABA", "ABA", "AAA", "ABA"]);
+    tiles[5] = new Tile(tileImages[5], ["BBB", "BBB", "BBB", "BBB"]);
+  }
 
   // Rotate tiles
   // TODO: eliminate redundancy
-  for (let i = 2; i < 14; i++) {
+  for (let i = 0; i < numOriginalTiles; i++) {
     for (let j = 1; j < 4; j++) {
       tiles.push(tiles[i].rotate(j));
     }
@@ -82,7 +97,6 @@ function checkValid(arr, valid) {
     }
   }
 }
-varible(pause)
 
 function draw() {
  if (paused){
