@@ -227,5 +227,8 @@ function keyPressed() {
   if (key === 'r') {
     startOver();
   }
+  if (key === 's') {
+    switch = tileset
+  }
 }
   
