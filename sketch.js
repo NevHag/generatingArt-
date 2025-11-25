@@ -228,7 +228,10 @@ function keyPressed() {
     startOver();
   }
   if (key === 's') {
-    switch = tileset
+    if (tileset === "maze")
+    tileset = "circuit" 
+  } else {
+    tilset = "maze"
   }
 }
   
