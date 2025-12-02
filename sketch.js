@@ -7,8 +7,8 @@
 // Corrected and Expanded: https://github.com/CodingTrain/Wave-Function-Collapse
 
 // Array for tiles and tile images
-const tiles = [];
-const tileImages = [];
+const tiles = {};
+const tileImages = {};
 
 // Current state of the grid
 let grid = [];
@@ -18,59 +18,110 @@ const DIM = 25;
 
 var paused = false;
 
-var tileset = "maze"
+var tileset = "maze";
 var numOriginalTiles = 6;
+
+function loadImages(name, count) {
+  var tileImages = [];
+  for (let i = 0; i < count; i++) {
+    tileImages[i] = loadImage(`${name}/${i}.png`);
+  }
+  return tileImages;
+}
+
+function createRotations(tilesArr) {
+  var newTiles = [];
+  // Rotate tiles
+  // TODO: eliminate redundancy
+  for (let i = 0; i < tilesArr.length; i++) {
+    for (let j = 0; j < 4; j++) {
+      newTiles.push(tilesArr[i].rotate(j));
+    }
+  }
+  return newTiles;
+}
 
 // Load images
 function preload() {
-  let numOriginalTiles = 6;
-  if (tileset === "circuit") {
-    numOriginalTiles = 13;
-  }
-  for (let i = 0; i < numOriginalTiles; i++) {
-    tileImages[i] = loadImage(`${tileset}/${i}.png`);
-  }
+  tileImages["circuit"] = loadImages("circuit", 13);
+  tileImages["maze"] = loadImages("maze", 6);
 }
 
 function setup() {
   createCanvas(400, 400);
 
   // Create and label the tiles
-  if (tileset === "circuit") {
-    tiles[0] = new Tile(tileImages[0], ["AAA", "AAA", "AAA", "AAA"]);
-    tiles[1] = new Tile(tileImages[1], ["BBB", "BBB", "BBB", "BBB"]);
-    tiles[2] = new Tile(tileImages[2], ["BBB", "BCB", "BBB", "BBB"]);
-    tiles[3] = new Tile(tileImages[3], ["BBB", "BDB", "BBB", "BDB"]);
-    tiles[4] = new Tile(tileImages[4], ["ABB", "BCB", "BBA", "AAA"]);
-    tiles[5] = new Tile(tileImages[5], ["ABB", "BBB", "BBB", "BBA"]);
-    tiles[6] = new Tile(tileImages[6], ["BBB", "BCB", "BBB", "BCB"]);
-    tiles[7] = new Tile(tileImages[7], ["BDB", "BCB", "BDB", "BCB"]);
-    tiles[8] = new Tile(tileImages[8], ["BDB", "BBB", "BCB", "BBB"]);
-    tiles[9] = new Tile(tileImages[9], ["BCB", "BCB", "BBB", "BCB"]);
-    tiles[10] = new Tile(tileImages[10], ["BCB", "BCB", "BCB", "BCB"]);
-    tiles[11] = new Tile(tileImages[11], ["BCB", "BCB", "BBB", "BBB"]);
-    tiles[12] = new Tile(tileImages[12], ["BBB", "BCB", "BBB", "BCB"]);
-  } else {
-    tiles[0] = new Tile(tileImages[0], ["AAA", "AAA", "ABA", "AAA"]);
-    tiles[1] = new Tile(tileImages[1], ["AAA", "ABA", "ABA", "AAA"]);
-    tiles[2] = new Tile(tileImages[2], ["ABA", "AAA", "ABA", "AAA"]);
-    tiles[3] = new Tile(tileImages[3], ["ABA", "ABA", "ABA", "ABA"]);
-    tiles[4] = new Tile(tileImages[4], ["ABA", "ABA", "AAA", "ABA"]);
-    tiles[5] = new Tile(tileImages[5], ["BBB", "BBB", "BBB", "BBB"]);
-  }
+  tiles["circuit"] = [];
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][0], ["AAA", "AAA", "AAA", "AAA"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][1], ["BBB", "BBB", "BBB", "BBB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][2], ["BBB", "BCB", "BBB", "BBB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][3], ["BBB", "BDB", "BBB", "BDB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][4], ["ABB", "BCB", "BBA", "AAA"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][5], ["ABB", "BBB", "BBB", "BBA"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][6], ["BBB", "BCB", "BBB", "BCB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][7], ["BDB", "BCB", "BDB", "BCB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][8], ["BDB", "BBB", "BCB", "BBB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][9], ["BCB", "BCB", "BBB", "BCB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][10], ["BCB", "BCB", "BCB", "BCB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][11], ["BCB", "BCB", "BBB", "BBB"])
+  );
+  tiles["circuit"].push(
+    new Tile(tileImages["circuit"][12], ["BBB", "BCB", "BBB", "BCB"])
+  );
 
-  // Rotate tiles
-  // TODO: eliminate redundancy
-  for (let i = 0; i < numOriginalTiles; i++) {
-    for (let j = 1; j < 4; j++) {
-      tiles.push(tiles[i].rotate(j));
-    }
-  }
+  tiles["maze"] = [];
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][0], ["AAA", "AAA", "ABA", "AAA"])
+  );
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][1], ["AAA", "ABA", "ABA", "AAA"])
+  );
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][2], ["ABA", "AAA", "ABA", "AAA"])
+  );
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][3], ["ABA", "ABA", "ABA", "ABA"])
+  );
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][4], ["ABA", "ABA", "AAA", "ABA"])
+  );
+  tiles["maze"].push(
+    new Tile(tileImages["maze"][5], ["AAA", "AAA", "AAA", "AAA"])
+  );
+
+  tiles["circuit"] = createRotations(tiles["circuit"]);
+  tiles["maze"] = createRotations(tiles["maze"]);
 
   // Generate the adjacency rules based on edges
-  for (let i = 0; i < tiles.length; i++) {
-    const tile = tiles[i];
-    tile.analyze(tiles);
+  for (let j = 0; j < Object.values(tiles).length; j++) {
+    let arr = Object.values(tiles)[j];
+    for (let i = 0; i < arr.length; i++) {
+      const tile = arr[i];
+      tile.analyze(arr);
+    }
   }
 
   // Start over
@@ -80,7 +131,7 @@ function setup() {
 function startOver() {
   // Create cell for each spot on the grid
   for (let i = 0; i < DIM * DIM; i++) {
-    grid[i] = new Cell(tiles.length);
+    grid[i] = new Cell(tiles[tileset].length);
   }
 }
 
@@ -99,9 +150,9 @@ function checkValid(arr, valid) {
 }
 
 function draw() {
- if (paused){
-   // its paused, draw the paused screen
-   text('PAUSED')
+  if (paused) {
+    // its paused, draw the paused screen
+    text("PAUSED");
   } else {
     background(0);
     // Draw the grid
@@ -112,7 +163,7 @@ function draw() {
         let cell = grid[i + j * DIM];
         if (cell.collapsed) {
           let index = cell.options[0];
-          image(tiles[index].img, i * w, j * h, w, h);
+          image(tiles[tileset][index].img, i * w, j * h, w, h);
         } else {
           fill(0);
           stroke(100);
@@ -124,14 +175,14 @@ function draw() {
     let gridCopy = grid.slice();
     // Remove any collapsed cells
     gridCopy = gridCopy.filter((a) => !a.collapsed);
-    
+
     // The algorithm has completed if everything is collapsed
-    if (grid.length == 0) {
+    if (gridCopy.length == 0) {
       return;
     }
-    
+
     // Pick a cell with least entropy
-    
+
     // Sort by entropy
     gridCopy.sort((a, b) => {
       return a.options.length - b.options.length;
@@ -147,8 +198,7 @@ function draw() {
       }
     }
     if (stopIndex > 0) gridCopy.splice(stopIndex);
-    
-    
+
     // Collapse a cell
     const cell = random(gridCopy);
     cell.collapsed = true;
@@ -158,7 +208,7 @@ function draw() {
       return;
     }
     cell.options = [pick];
-    
+
     // Calculate entropy
     const nextGrid = [];
     for (let j = 0; j < DIM; j++) {
@@ -167,13 +217,13 @@ function draw() {
         if (grid[index].collapsed) {
           nextGrid[index] = grid[index];
         } else {
-          let options = new Array(tiles.length).fill(0).map((x, i) => i);
+          let options = new Array(tiles[tileset].length).fill(0).map((x, i) => i);
           // Look up
           if (j > 0) {
             let up = grid[i + (j - 1) * DIM];
             let validOptions = [];
             for (let option of up.options) {
-              let valid = tiles[option].down;
+              let valid = tiles[tileset][option].down;
               validOptions = validOptions.concat(valid);
             }
             checkValid(options, validOptions);
@@ -183,7 +233,7 @@ function draw() {
             let right = grid[i + 1 + j * DIM];
             let validOptions = [];
             for (let option of right.options) {
-              let valid = tiles[option].left;
+              let valid = tiles[tileset][option].left;
               validOptions = validOptions.concat(valid);
             }
             checkValid(options, validOptions);
@@ -193,7 +243,7 @@ function draw() {
             let down = grid[i + (j + 1) * DIM];
             let validOptions = [];
             for (let option of down.options) {
-              let valid = tiles[option].up;
+              let valid = tiles[tileset][option].up;
               validOptions = validOptions.concat(valid);
             }
             checkValid(options, validOptions);
@@ -203,7 +253,7 @@ function draw() {
             let left = grid[i - 1 + j * DIM];
             let validOptions = [];
             for (let option of left.options) {
-              let valid = tiles[option].right;
+              let valid = tiles[tileset][option].right;
               validOptions = validOptions.concat(valid);
             }
             checkValid(options, validOptions);
@@ -221,17 +271,18 @@ function draw() {
 
 // This function could be simplified, but it will work
 function keyPressed() {
-  if (key === 'p')  {
-   paused = !paused;
+  if (key === "p") {
+    paused = !paused;
   }
-  if (key === 'r') {
+  if (key === "s") {
+    if (tileset === "maze") {
+      tileset = "circuit";
+    } else {
+      tileset = "maze";
+    }
     startOver();
   }
-  if (key === 's') {
-    if (tileset === "maze")
-    tileset = "circuit" 
-  } else {
-    tilset = "maze"
+  if (key === "r") {
+    startOver();
   }
 }
-  
